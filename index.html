@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cek Nomor AXIS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #050c0a;
+      --dark: #0a1612;
+      --panel: #0d1f1a;
+      --border: #0f3d2e;
+      --green: #00ff88;
+      --green-dim: #00cc6a;
+      --cyan: #00e5ff;
+      --cyan-dim: #00b3cc;
+      --blue: #0077ff;
+      --blue-dim: #005acc;
+      --text: #b8ffe0;
+      --muted: #4d8870;
+      --error: #ff4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: 'Exo 2', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── GRID BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,255,136,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,136,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── SCAN LINE ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(transparent 50%, rgba(0,0,0,.03) 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 1;
+      animation: scanroll 8s linear infinite;
+      opacity: .4;
+    }
+    @keyframes scanroll {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 100px; }
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 60px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .logo-ring {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      position: relative;
+      animation: pulse-ring 2.4s ease-in-out infinite;
+      box-shadow: 0 0 20px rgba(0,255,136,.2), inset 0 0 20px rgba(0,255,136,.05);
+    }
+    .logo-ring::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,255,136,.2);
+      animation: pulse-ring 2.4s ease-in-out infinite .4s;
+    }
+    .logo-ring svg { width: 36px; height: 36px; fill: var(--green); }
+    @keyframes pulse-ring {
+      0%,100% { box-shadow: 0 0 16px rgba(0,255,136,.2); }
+      50% { box-shadow: 0 0 36px rgba(0,255,136,.5); }
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--green);
+      text-shadow: 0 0 20px rgba(0,255,136,.4);
+    }
+    .header p {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── CARD ── */
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      box-shadow: 0 0 40px rgba(0,255,136,.05);
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--green), var(--cyan), transparent);
+      border-radius: 12px 12px 0 0;
+    }
+
+    /* ── INPUT ROW ── */
+    .input-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .input-wrap {
+      flex: 1;
+      position: relative;
+    }
+    .input-wrap input {
+      width: 100%;
+      background: rgba(0,255,136,.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 40px 14px 16px;
+      color: var(--green);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 16px;
+      letter-spacing: 2px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .input-wrap input:focus {
+      border-color: var(--green-dim);
+      box-shadow: 0 0 16px rgba(0,255,136,.15);
+    }
+    .input-wrap input::placeholder { color: var(--muted); opacity: .6; }
+
+    /* clear button */
+    .btn-clear {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: color .2s, background .2s;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .btn-clear.show { opacity: 1; pointer-events: all; }
+    .btn-clear:hover { color: var(--error); background: rgba(255,68,68,.1); }
+    .btn-clear svg { width: 14px; height: 14px; }
+
+    /* check button */
+    .btn-check {
+      background: linear-gradient(135deg, var(--green-dim), var(--cyan-dim));
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 14px 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform .15s, box-shadow .2s, opacity .2s;
+      box-shadow: 0 4px 20px rgba(0,255,136,.2);
+    }
+    .btn-check:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(0,255,136,.35);
+    }
+    .btn-check:active:not(:disabled) { transform: translateY(0); }
+    .btn-check:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ── LOADING ── */
+    .loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 32px 0 16px;
+    }
+    .loading.show { display: flex; }
+
+    .loader-orb {
+      width: 56px;
+      height: 56px;
+      position: relative;
+    }
+    .orb-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: var(--green);
+      border-right-color: var(--cyan);
+      animation: spin 1s linear infinite;
+    }
+    .orb-inner2 {
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-bottom-color: var(--blue);
+      border-left-color: var(--green-dim);
+      animation: spin 1.6s linear infinite reverse;
+    }
+    .orb-dot {
+      position: absolute;
+      inset: 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--cyan), var(--green));
+      animation: pulse-orb 1.2s ease-in-out infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse-orb {
+      0%,100% { opacity: .7; transform: scale(.85); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .loading-text {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      animation: blink-text 1.2s ease-in-out infinite;
+    }
+    @keyframes blink-text {
+      0%,100% { opacity: 1; }
+      50% { opacity: .4; }
+    }
+
+    .loading-bar {
+      width: 220px;
+      height: 3px;
+      background: rgba(0,255,136,.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .loading-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      border-radius: 2px;
+      animation: scan-bar 1.4s ease-in-out infinite;
+    }
+    @keyframes scan-bar {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(400%); }
+    }
+
+    /* ── RESULT ── */
+    .result {
+      display: none;
+      margin-top: 24px;
+      animation: slide-up .4s ease;
+    }
+    .result.show { display: block; }
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-badge {
+      background: linear-gradient(135deg, rgba(0,255,136,.15), rgba(0,229,255,.1));
+      border: 1px solid var(--green-dim);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+    .result-msisdn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 15px;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      margin-left: auto;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 420px) { .result-grid { grid-template-columns: 1fr; } }
+
+    .result-item {
+      background: rgba(0,255,136,.03);
+      border: 1px solid rgba(0,255,136,.08);
+      border-radius: 8px;
+      padding: 12px 14px;
+      position: relative;
+      overflow: hidden;
+      animation: item-in .4s ease both;
+    }
+    .result-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--green), var(--cyan));
+      border-radius: 2px 0 0 2px;
+    }
+    @keyframes item-in {
+      from { opacity: 0; transform: translateX(-6px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .item-key {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .item-val {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 15px;
+      color: var(--green);
+      font-weight: 600;
+    }
+    .item-val.success { color: var(--green); }
+    .item-val.warn { color: #ffcc00; }
+    .item-val.info { color: var(--cyan); }
+    .item-val.blue { color: #7eb8ff; }
+
+    /* volte row spans full width */
+    .full { grid-column: 1 / -1; }
+    .volte-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .chip {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .chip.on  { background: rgba(0,255,136,.12); border: 1px solid var(--green-dim); color: var(--green); }
+    .chip.off { background: rgba(255,68,68,.1);  border: 1px solid rgba(255,68,68,.4); color: #ff7777; }
+
+    /* ── PAKET & QUOTA ── */
+    .paket-name {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--cyan);
+      margin: 6px 0 2px;
+      line-height: 1.4;
+    }
+    .paket-expire {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .quota-list { display: flex; flex-direction: column; gap: 8px; }
+    .quota-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+      gap: 8px;
+    }
+    .quota-label {
+      font-size: 11px;
+      color: var(--text);
+      opacity: .8;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .quota-rem {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--green);
+      white-space: nowrap;
+    }
+    .quota-bar-wrap {
+      height: 4px;
+      background: rgba(0,255,136,.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .quota-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      border-radius: 3px;
+    }
+
+    /* ── ERROR ── */
+    .error-box {
+      display: none;
+      margin-top: 20px;
+      background: rgba(255,68,68,.06);
+      border: 1px solid rgba(255,68,68,.3);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: #ff8888;
+      font-size: 13px;
+      letter-spacing: .5px;
+      animation: slide-up .3s ease;
+    }
+    .error-box.show { display: block; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-ring">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1.5 8.5C3.9 4.3 8.6 1.5 12 1.5c3.4 0 8.1 2.8 10.5 7M22.5 15.5C20.1 19.7 15.4 22.5 12 22.5c-3.4 0-8.1-2.8-10.5-7M12 8v8M8.5 10l3.5-2 3.5 2M8.5 14l3.5 2 3.5-2"/>
+      </svg>
+    </div>
+    <h1>Cek Nomor AXIS</h1>
+    <p>Network Information Lookup Tool</p>
+  </div>
+
+  <!-- CARD -->
+  <div class="card">
+    <div class="input-label">Nomor Telepon</div>
+    <div class="input-row">
+      <div class="input-wrap">
+        <input
+          type="text"
+          id="phoneInput"
+          placeholder="Contoh: 6283812345678"
+          maxlength="20"
+          inputmode="numeric"
+        />
+        <button class="btn-clear" id="btnClear" title="Hapus">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <button class="btn-check" id="btnCheck">CEK</button>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading" id="loading">
+      <div class="loader-orb">
+        <div class="orb-inner"></div>
+        <div class="orb-inner2"></div>
+        <div class="orb-dot"></div>
+      </div>
+      <div class="loading-text" id="loadingText">QUERYING NETWORK...</div>
+      <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="error-box" id="errorBox"></div>
+
+    <!-- RESULT -->
+    <div class="result" id="result">
+      <div class="result-header">
+        <div class="result-badge">✓ Data Ditemukan</div>
+        <div class="result-msisdn" id="resMsisdn"></div>
+      </div>
+      <div class="result-grid" id="resGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const input   = document.getElementById('phoneInput');
+  const btnClear = document.getElementById('btnClear');
+  const btnCheck = document.getElementById('btnCheck');
+  const loading  = document.getElementById('loading');
+  const loadingText = document.getElementById('loadingText');
+  const errorBox = document.getElementById('errorBox');
+  const result   = document.getElementById('result');
+  const resMsisdn= document.getElementById('resMsisdn');
+  const resGrid  = document.getElementById('resGrid');
+
+  const loadingPhrases = [
+    'QUERYING NETWORK...', 'AUTHENTICATING...', 'FETCHING SIM DATA...',
+    'PARSING RESPONSE...', 'ALMOST DONE...'
+  ];
+  let phraseIdx = 0, phraseTimer;
+
+  input.addEventListener('input', () => {
+    btnClear.classList.toggle('show', input.value.length > 0);
+  });
+
+  btnClear.addEventListener('click', () => {
+    input.value = '';
+    btnClear.classList.remove('show');
+    input.focus();
+    hide([errorBox, result]);
+  });
+
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+  btnCheck.addEventListener('click', check);
+
+  function hide(els) { els.forEach(el => el.classList.remove('show')); }
+  function show(el) { el.classList.add('show'); }
+
+  async function check() {
+    const num = input.value.trim();
+    if (!num) { shakeInput(); return; }
+
+    hide([errorBox, result]);
+    show(loading);
+    btnCheck.disabled = true;
+
+    phraseIdx = 0;
+    loadingText.textContent = loadingPhrases[0];
+    phraseTimer = setInterval(() => {
+      phraseIdx = (phraseIdx + 1) % loadingPhrases.length;
+      loadingText.textContent = loadingPhrases[phraseIdx];
+    }, 900);
+
+    try {
+      const res = await fetch(`https://api-nanzz.my.id/docs/api/tools/ceknomoraxis.php?number=${encodeURIComponent(num)}`);
+      const json = await res.json();
+      clearInterval(phraseTimer);
+      loading.classList.remove('show');
+      btnCheck.disabled = false;
+
+      if (!json.success) {
+        errorBox.textContent = json.message || 'Gagal mengambil data. Coba lagi.';
+        show(errorBox);
+        return;
+      }
+
+      renderResult(json.data);
+    } catch(err) {
+      clearInterval(phraseTimer);
+      loading.classList.remove('show');
+      btnCheck.disabled = false;
+      errorBox.textContent = 'Koneksi gagal. Periksa jaringan Anda.';
+      show(errorBox);
+    }
+  }
+
+  function renderResult(d) {
+    resMsisdn.textContent = d.msisdn;
+    resGrid.innerHTML = '';
+
+    const items = [
+      { key: 'Provider',       val: d.prefix?.value,       cls: 'success' },
+      { key: 'Status 4G',      val: d.status_4g?.value,    cls: 'info'    },
+      { key: 'Dukcapil',       val: d.dukcapil?.value,     cls: d.dukcapil?.value === 'Sudah' ? 'success' : 'warn' },
+      { key: 'Aktif Kartu',    val: d.active_card?.value,  cls: 'blue'    },
+      { key: 'Masa Aktif',     val: d.active_period?.value,cls: 'success' },
+      { key: 'Grace Period',   val: d.grace_period?.value, cls: 'warn'    },
+    ];
+
+    items.forEach((item, i) => {
+      if (!item.val) return;
+      const div = document.createElement('div');
+      div.className = 'result-item';
+      div.style.animationDelay = `${i * 60}ms`;
+      div.innerHTML = `<div class="item-key">${item.key}</div><div class="item-val ${item.cls}">${item.val}</div>`;
+      resGrid.appendChild(div);
+    });
+
+    // VoLTE
+    if (d.volte?.success && d.volte.value) {
+      const v = d.volte.value;
+      const div = document.createElement('div');
+      div.className = 'result-item full';
+      div.style.animationDelay = `${items.length * 60}ms`;
+      div.innerHTML = `
+        <div class="item-key">VoLTE Support</div>
+        <div class="volte-chips">
+          <span class="chip ${v.device ? 'on' : 'off'}">Device ${v.device ? '✓' : '✗'}</span>
+          <span class="chip ${v.area   ? 'on' : 'off'}">Area ${v.area   ? '✓' : '✗'}</span>
+          <span class="chip ${v.simcard? 'on' : 'off'}">SIM ${v.simcard ? '✓' : '✗'}</span>
+        </div>`;
+      resGrid.appendChild(div);
+    }
+
+    // Kuota
+    const qDiv = document.createElement('div');
+    qDiv.className = 'result-item full';
+    qDiv.style.animationDelay = `${(items.length + 1) * 60}ms`;
+
+    if (d.quotas?.success && Array.isArray(d.quotas.value) && d.quotas.value.length > 0) {
+      let html = `<div class="item-key">Paket Aktif</div>`;
+      d.quotas.value.forEach(paket => {
+        html += `<div class="paket-name">${paket.name}</div>`;
+        html += `<div class="paket-expire">Exp: ${paket.date_end}</div>`;
+        if (Array.isArray(paket.detail_quota) && paket.detail_quota.length > 0) {
+          html += `<div class="quota-list">`;
+          paket.detail_quota.forEach(q => {
+            const pct = Math.min(100, Math.max(0, 100 - q.percent));
+            html += `
+              <div class="quota-row">
+                <div class="quota-row-top">
+                  <span class="quota-label">${q.name}</span>
+                  <span class="quota-rem">${q.remaining_text} / ${q.total_text}</span>
+                </div>
+                <div class="quota-bar-wrap">
+                  <div class="quota-bar-fill" style="width:${pct}%"></div>
+                </div>
+              </div>`;
+          });
+          html += `</div>`;
+        }
+      });
+      qDiv.innerHTML = html;
+    } else {
+      qDiv.innerHTML = `<div class="item-key">Paket Aktif</div><div class="item-val warn">${d.quotas?.message || 'Tidak ada paket aktif'}</div>`;
+    }
+    resGrid.appendChild(qDiv);
+
+    show(result);
+  }
+
+  function shakeInput() {
+    input.style.animation = 'shake .3s ease';
+    setTimeout(() => { input.style.animation = ''; }, 300);
+  }
+</script>
+<style>
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-6px)}
+    75%{transform:translateX(6px)}
+  }
+</style>
+</body>
+</html>
